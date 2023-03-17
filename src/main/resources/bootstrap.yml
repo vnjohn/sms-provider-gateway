@@ -1,0 +1,20 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: sms-provider-vnjohn
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        namespace: 6c2c66a4-04c8-4e11-9b79-e8c3226e694c
+        username: nacos
+        password: nacos
+      config:
+        server-addr: localhost:8848
+        namespace: 6c2c66a4-04c8-4e11-9b79-e8c3226e694c
+        username: nacos
+        password: nacos
+        extension-configs:
+          - data-id: sms-provider-config.yaml
