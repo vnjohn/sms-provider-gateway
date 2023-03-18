@@ -15,7 +15,7 @@ sms:
             secret:
         # 腾讯云
         tencent:
-            access-key: AKIDqeJo8HMvOky42teKuOn5KSWTH3ihYPCw
-            secret: d7QabR7ecQ4aw891oRySqBSdjhXEvZyL
+            access-key: 
+            secret: 
             sdkAppId: 
 ```
