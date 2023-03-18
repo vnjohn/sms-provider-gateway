@@ -14,10 +14,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @EnableDiscoveryClient
 @SpringBootApplication
-public class SmsProviderVnjohnApplication {
+public class SmsProviderApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SmsProviderVnjohnApplication.class, args);
+        SpringApplication.run(SmsProviderApplication.class, args);
     }
 
 }

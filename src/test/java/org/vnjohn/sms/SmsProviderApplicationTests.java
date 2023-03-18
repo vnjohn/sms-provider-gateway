@@ -17,7 +17,7 @@ import java.nio.file.Files;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-public class SmsProviderVnjohnApplicationTests {
+public class SmsProviderApplicationTests {
 
     @Test
     public void contextLoads() {
