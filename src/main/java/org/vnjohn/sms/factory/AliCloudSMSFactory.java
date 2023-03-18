@@ -12,9 +12,8 @@ import org.vnjohn.sms.dto.ModifyTemplateDTO;
 import org.vnjohn.sms.entity.AbstractSMSShortLink;
 import org.vnjohn.sms.entity.AbstractSMSSign;
 import org.vnjohn.sms.entity.AbstractSMSTemplate;
-import org.vnjohn.sms.entity.ali.AliApplyOrModifySign;
-import org.vnjohn.sms.entity.ali.AliRemoveSign;
-import org.vnjohn.sms.entity.ali.AliStatusSign;
+import org.vnjohn.sms.entity.ali.*;
+import org.vnjohn.sms.enums.SMSTemplateTypeEnum;
 import org.vnjohn.sms.enums.ali.AliSignSourceEnum;
 import org.vnjohn.sms.enums.ali.AliSignTypeEnum;
 import org.vnjohn.sms.utils.CertificationFileUtil;
@@ -70,23 +69,36 @@ public class AliCloudSMSFactory extends AbstractSMSFactory {
     }
 
     @Override
-    public <T extends AbstractSMSTemplate> AbstractSMSSign createApplyTemplate(ApplyTemplateDTO applyTemplateDTO) {
-        return super.createApplyTemplate(applyTemplateDTO);
+    public <T extends AbstractSMSTemplate> AbstractSMSTemplate createApplyTemplate(ApplyTemplateDTO applyTemplateDTO) {
+        SMSTemplateTypeEnum templateTypeEnum = checkTemplateType(applyTemplateDTO.getType());
+        return AliApplyOrModifyTemplate.builder()
+                                       .name(applyTemplateDTO.getName())
+                                       .type(templateTypeEnum.getCode())
+                                       .content(applyTemplateDTO.getContent())
+                                       .remark(applyTemplateDTO.getRemark())
+                                       .build();
     }
 
     @Override
-    public <T extends AbstractSMSTemplate> AbstractSMSSign createModifyTemplate(ModifyTemplateDTO modifyTemplateDTO) {
-        return super.createModifyTemplate(modifyTemplateDTO);
+    public <T extends AbstractSMSTemplate> AbstractSMSTemplate createModifyTemplate(ModifyTemplateDTO modifyTemplateDTO) {
+        SMSTemplateTypeEnum templateTypeEnum = checkTemplateType(modifyTemplateDTO.getType());
+        return AliApplyOrModifyTemplate.builder()
+                                       .code(modifyTemplateDTO.getCode())
+                                       .name(modifyTemplateDTO.getName())
+                                       .type(templateTypeEnum.getCode())
+                                       .content(modifyTemplateDTO.getContent())
+                                       .remark(modifyTemplateDTO.getRemark())
+                                       .build();
     }
 
     @Override
-    public <T extends AbstractSMSTemplate> AbstractSMSSign createRemoveTemplate() {
-        return super.createRemoveTemplate();
+    public <T extends AbstractSMSTemplate> AbstractSMSTemplate createRemoveTemplate(String code) {
+        return AliRemoveTemplate.builder().code(code).build();
     }
 
     @Override
-    public <T extends AbstractSMSTemplate> AbstractSMSSign createQueryTemplateStatus() {
-        return super.createQueryTemplateStatus();
+    public <T extends AbstractSMSTemplate> AbstractSMSTemplate createQueryTemplateStatus(Integer type, String code) {
+        return AliStatusTemplate.builder().code(code).build();
     }
 
     @Override
@@ -106,6 +118,13 @@ public class AliCloudSMSFactory extends AbstractSMSFactory {
         AliSignSourceEnum signSourceEnum = AliSignSourceEnum.parseByInnerCode(signSource);
         throwNull(signSourceEnum, "签名来源不存在");
         return signSourceEnum;
+    }
+
+    @NotNull
+    private SMSTemplateTypeEnum checkTemplateType(Integer type) {
+        SMSTemplateTypeEnum templateTypeEnum = SMSTemplateTypeEnum.parseByCode(type);
+        throwNull(templateTypeEnum, "模版类型不存在");
+        return templateTypeEnum;
     }
 
     /**

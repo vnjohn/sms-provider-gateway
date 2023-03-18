@@ -61,7 +61,7 @@ public abstract class AbstractSMSFactory {
      * @param <T>
      * @return
      */
-    public <T extends AbstractSMSTemplate> AbstractSMSSign createApplyTemplate(ApplyTemplateDTO applyTemplateDTO) {
+    public <T extends AbstractSMSTemplate> AbstractSMSTemplate createApplyTemplate(ApplyTemplateDTO applyTemplateDTO) {
         return null;
     }
 
@@ -71,7 +71,7 @@ public abstract class AbstractSMSFactory {
      * @param <T>
      * @return
      */
-    public <T extends AbstractSMSTemplate> AbstractSMSSign createModifyTemplate(ModifyTemplateDTO modifyTemplateDTO) {
+    public <T extends AbstractSMSTemplate> AbstractSMSTemplate createModifyTemplate(ModifyTemplateDTO modifyTemplateDTO) {
         return null;
     }
 
@@ -81,7 +81,7 @@ public abstract class AbstractSMSFactory {
      * @param <T>
      * @return
      */
-    public <T extends AbstractSMSTemplate> AbstractSMSSign createRemoveTemplate() {
+    public <T extends AbstractSMSTemplate> AbstractSMSTemplate createRemoveTemplate(String code) {
         return null;
     }
 
@@ -91,7 +91,7 @@ public abstract class AbstractSMSFactory {
      * @param <T>
      * @return
      */
-    public <T extends AbstractSMSTemplate> AbstractSMSSign createQueryTemplateStatus() {
+    public <T extends AbstractSMSTemplate> AbstractSMSTemplate createQueryTemplateStatus(Integer type, String code) {
         return null;
     }
 

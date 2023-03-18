@@ -12,12 +12,12 @@ import org.vnjohn.sms.SMSCloudProviderConfig;
 import org.vnjohn.sms.SmsBusinessException;
 import org.vnjohn.sms.condition.TencentCloudOnCondition;
 import org.vnjohn.sms.entity.AbstractSMSSign;
-import org.vnjohn.sms.entity.tencent.TencentApplyOrModifySign;
-import org.vnjohn.sms.entity.tencent.TencentRemoveSign;
-import org.vnjohn.sms.entity.tencent.TencentStatusSign;
+import org.vnjohn.sms.entity.AbstractSMSTemplate;
+import org.vnjohn.sms.entity.tencent.*;
 import org.vnjohn.sms.enums.SMSSignApplyStatusEnum;
-import org.vnjohn.sms.enums.tencent.TencentSignApplyStatusEnum;
-import org.vnjohn.sms.response.SignStatusResponse;
+import org.vnjohn.sms.enums.tencent.TencentApplyStatusEnum;
+import org.vnjohn.sms.enums.tencent.TencentCommonCodeEnum;
+import org.vnjohn.sms.response.ApplyStatusResponse;
 import org.vnjohn.sms.utils.JacksonUtils;
 
 import javax.annotation.PostConstruct;
@@ -26,6 +26,8 @@ import javax.annotation.Resource;
 import static org.vnjohn.sms.SmsBusinessException.throwNull;
 
 /**
+ * 应用管理：https://console.cloud.tencent.com/smsv2
+ * 密钥：https://console.cloud.tencent.com/cam/capi
  * @author vnjohn
  * @since 2023/3/17
  */
@@ -67,7 +69,7 @@ public class TencentCloudSMSServiceImpl extends AbstractSMSService {
         static SmsClient SINGLETON_CLIENT = null;
         static {
             try {
-                Credential cred = new Credential(SECRET, ACCESS_KEY);
+                Credential cred = new Credential(ACCESS_KEY, SECRET);
                 HttpProfile httpProfile = new HttpProfile();
                 httpProfile.setEndpoint(END_POINT);
                 // 实例化要请求产品的 client 对象,clientProfile 是可选的
@@ -92,7 +94,7 @@ public class TencentCloudSMSServiceImpl extends AbstractSMSService {
             return String.valueOf(applySmsSignResponse.getAddSignStatus().getSignId());
         } catch (TencentCloudSDKException sdkException) {
             log.error("Tencent applySign sdkException：{}", sdkException.getMessage());
-            throw new SmsBusinessException(String.format("apply tencent sign fail %s", sdkException.getMessage()));
+            throw new SmsBusinessException(processMessageByCode(sdkException.getErrorCode()));
         } catch (Exception e) {
             log.error("Tencent applySign Exception：{}", e.getMessage());
             throw new SmsBusinessException(e.getMessage());
@@ -109,7 +111,7 @@ public class TencentCloudSMSServiceImpl extends AbstractSMSService {
             return String.valueOf(modifySmsSignResponse.getModifySignStatus().getSignId());
         } catch (TencentCloudSDKException sdkException) {
             log.error("Tencent modifySign sdkException：{}", sdkException.getMessage());
-            throw new SmsBusinessException(String.format("modify tencent sign fail %s", sdkException.getMessage()));
+            throw new SmsBusinessException(processMessageByCode(sdkException.getErrorCode()));
         } catch (Exception e) {
             log.error("Tencent modifySign Exception：{}", e.getMessage());
             throw new SmsBusinessException(e.getMessage());
@@ -126,7 +128,7 @@ public class TencentCloudSMSServiceImpl extends AbstractSMSService {
             return String.valueOf(deleteSmsSignResponse.getDeleteSignStatus().getDeleteStatus());
         } catch (TencentCloudSDKException sdkException) {
             log.error("Tencent removeSign sdkException：{}", sdkException.getMessage());
-            throw new SmsBusinessException(String.format("remove tencent sign fail %s", sdkException.getMessage()));
+            throw new SmsBusinessException(processMessageByCode(sdkException.getErrorCode()));
         } catch (Exception e) {
             log.error("Tencent removeSign Exception：{}", e.getMessage());
             throw new SmsBusinessException(e.getMessage());
@@ -134,7 +136,7 @@ public class TencentCloudSMSServiceImpl extends AbstractSMSService {
     }
 
     @Override
-    public <T extends AbstractSMSSign> SignStatusResponse querySignApplyStatus(AbstractSMSSign statusSmsSign) {
+    public <T extends AbstractSMSSign> ApplyStatusResponse querySignApplyStatus(AbstractSMSSign statusSmsSign) {
         TencentStatusSign statusSign = (TencentStatusSign) statusSmsSign;
         DescribeSmsSignListRequest smsSignListRequest = statusSign.toDescribeSmsSignListRequest();
         try {
@@ -143,14 +145,98 @@ public class TencentCloudSMSServiceImpl extends AbstractSMSService {
             DescribeSignListStatus[] describeSignListStatusSet = smsSignListResponse.getDescribeSignListStatusSet();
             throwNull(describeSignListStatusSet, "status tencent sign is null");
             DescribeSignListStatus signListStatuses = describeSignListStatusSet[0];
-            TencentSignApplyStatusEnum signApplyStatusEnum = TencentSignApplyStatusEnum.parseByCode(signListStatuses.getStatusCode().intValue());
-            return SignStatusResponse.builder().status(SMSSignApplyStatusEnum.parseByCode(signApplyStatusEnum.getInnerCode()).getCode()).reason(signListStatuses.getReviewReply()).build();
+            TencentApplyStatusEnum signApplyStatusEnum = TencentApplyStatusEnum.parseByCode(signListStatuses.getStatusCode().intValue());
+            return ApplyStatusResponse.builder().status(SMSSignApplyStatusEnum.parseByCode(signApplyStatusEnum.getInnerCode()).getCode()).reason(signListStatuses.getReviewReply()).build();
         } catch (TencentCloudSDKException sdkException) {
             log.error("Tencent querySignApplyStatus sdkException：{}", sdkException.getMessage());
-            throw new SmsBusinessException(String.format("status tencent sign fail %s", sdkException.getMessage()));
+            throw new SmsBusinessException(processMessageByCode(sdkException.getErrorCode()));
         } catch (Exception e) {
             log.error("Tencent querySignApplyStatus Exception：{}", e.getMessage());
             throw new SmsBusinessException(e.getMessage());
         }
     }
+
+    @Override
+    public <T extends AbstractSMSTemplate> String applyTemplate(AbstractSMSTemplate applySmsTemplate) {
+        TencentApplyOrModifyTemplate applyTemplate = (TencentApplyOrModifyTemplate) applySmsTemplate;
+        AddSmsTemplateRequest ddSmsTemplateRequest = applyTemplate.toAddSmsTemplateRequest();
+        try {
+            AddSmsTemplateResponse addSmsTemplateResponse = getInstance().AddSmsTemplate(ddSmsTemplateRequest);
+            log.info("apply tencent template，request【{}】，response【{}】", JacksonUtils.toJson(ddSmsTemplateRequest), JacksonUtils.toJson(addSmsTemplateResponse));
+            AddTemplateStatus addTemplateStatus = addSmsTemplateResponse.getAddTemplateStatus();
+            return addTemplateStatus.getTemplateId();
+        } catch (TencentCloudSDKException sdkException) {
+            log.error("Tencent applyTemplate sdkException：{}", sdkException.getMessage());
+            throw new SmsBusinessException(processMessageByCode(sdkException.getErrorCode()));
+        } catch (Exception e) {
+            log.error("Tencent applyTemplate Exception：{}", e.getMessage());
+            throw new SmsBusinessException(e.getMessage());
+        }
+    }
+
+    @Override
+    public <T extends AbstractSMSTemplate> String modifyTemplate(AbstractSMSTemplate modifySmsTemplate) {
+        TencentApplyOrModifyTemplate modifyTemplate = (TencentApplyOrModifyTemplate) modifySmsTemplate;
+        ModifySmsTemplateRequest modifySmsTemplateRequest = modifyTemplate.toModifySmsTemplateRequest();
+        try {
+            ModifySmsTemplateResponse modifySmsTemplateResponse = getInstance().ModifySmsTemplate(modifySmsTemplateRequest);
+            log.info("modify tencent template，request【{}】，response【{}】", JacksonUtils.toJson(modifySmsTemplateRequest), JacksonUtils.toJson(modifySmsTemplateResponse));
+            ModifyTemplateStatus modifyTemplateStatus = modifySmsTemplateResponse.getModifyTemplateStatus();
+            return modifyTemplateStatus.getTemplateId().toString();
+        } catch (TencentCloudSDKException sdkException) {
+            log.error("Tencent modifyTemplate sdkException：{}", sdkException.getMessage());
+            throw new SmsBusinessException(processMessageByCode(sdkException.getErrorCode()));
+        } catch (Exception e) {
+            log.error("Tencent modifyTemplate Exception：{}", e.getMessage());
+            throw new SmsBusinessException(e.getMessage());
+        }
+    }
+
+    @Override
+    public <T extends AbstractSMSTemplate> String removeTemplate(AbstractSMSTemplate removeSmsTemplate) {
+        TencentRemoveTemplate removeTemplate = (TencentRemoveTemplate) removeSmsTemplate;
+        DeleteSmsTemplateRequest deleteSmsTemplateRequest = removeTemplate.toDeleteSmsTemplateRequest();
+        try {
+            DeleteSmsTemplateResponse deleteSmsTemplateResponse = getInstance().DeleteSmsTemplate(deleteSmsTemplateRequest);
+            log.info("remove tencent template，request【{}】，response【{}】", JacksonUtils.toJson(deleteSmsTemplateRequest), JacksonUtils.toJson(deleteSmsTemplateResponse));
+            DeleteTemplateStatus deleteTemplateStatus = deleteSmsTemplateResponse.getDeleteTemplateStatus();
+            return deleteTemplateStatus.getDeleteStatus();
+        } catch (TencentCloudSDKException sdkException) {
+            log.error("Tencent removeTemplate sdkException：{}", sdkException.getMessage());
+            throw new SmsBusinessException(processMessageByCode(sdkException.getErrorCode()));
+        } catch (Exception e) {
+            log.error("Tencent removeTemplate Exception：{}", e.getMessage());
+            throw new SmsBusinessException(e.getMessage());
+        }
+    }
+
+    @Override
+    public <T extends AbstractSMSTemplate> ApplyStatusResponse queryTemplateApplyStatus(AbstractSMSTemplate statusSmsTemplate) {
+        TencentStatusTemplate statusTemplate = (TencentStatusTemplate) statusSmsTemplate;
+        DescribeSmsTemplateListRequest smsTemplateListRequest = statusTemplate.toDescribeSmsTemplateListRequest();
+        try {
+            DescribeSmsTemplateListResponse smsTemplateListResponse = getInstance().DescribeSmsTemplateList(smsTemplateListRequest);
+            log.info("status tencent template，request【{}】，response【{}】", JacksonUtils.toJson(smsTemplateListRequest), JacksonUtils.toJson(smsTemplateListResponse));
+            DescribeTemplateListStatus[] describeTemplateListStatusSet = smsTemplateListResponse.getDescribeTemplateStatusSet();
+            throwNull(describeTemplateListStatusSet, "status tencent template is null");
+            DescribeTemplateListStatus templateListStatuses = describeTemplateListStatusSet[0];
+            TencentApplyStatusEnum signApplyStatusEnum = TencentApplyStatusEnum.parseByCode(templateListStatuses.getStatusCode().intValue());
+            return ApplyStatusResponse.builder().status(SMSSignApplyStatusEnum.parseByCode(signApplyStatusEnum.getInnerCode()).getCode()).reason(templateListStatuses.getReviewReply()).build();
+        } catch (TencentCloudSDKException sdkException) {
+            log.error("Tencent queryTemplateApplyStatus sdkException：{}", sdkException.getMessage());
+            throw new SmsBusinessException(processMessageByCode(sdkException.getErrorCode()));
+        } catch (Exception e) {
+            log.error("Tencent queryTemplateApplyStatus Exception：{}", e.getMessage());
+            throw new SmsBusinessException(e.getMessage());
+        }
+    }
+
+    /**
+     * 处理调用结果返回状态码，message
+     */
+    public String processMessageByCode(String code) {
+        TencentCommonCodeEnum tencentCommonCodeEnum = TencentCommonCodeEnum.parseByCode(code);
+        return null == tencentCommonCodeEnum ? String.format("该异常码%s未匹配，请查看对应错误码文档：https://cloud.tencent.com/document/api/382/52075", code) : tencentCommonCodeEnum.getMessage();
+    }
+
 }

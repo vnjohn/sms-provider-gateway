@@ -10,7 +10,7 @@ import java.util.Arrays;
  * @since 2023/3/18
  */
 @Getter
-public enum TencentSignApplyStatusEnum {
+public enum TencentApplyStatusEnum {
     /**
      * 审核中、审核通过、审核失败
      * {@link SMSSignApplyStatusEnum}
@@ -21,17 +21,17 @@ public enum TencentSignApplyStatusEnum {
 
     private final Integer innerCode;
 
-    private final Integer code;
+    private final Integer outCode;
 
     private final String desc;
 
-    TencentSignApplyStatusEnum(Integer innerCode, Integer code, String desc) {
+    TencentApplyStatusEnum(Integer innerCode, Integer outCode, String desc) {
         this.innerCode = innerCode;
-        this.code = code;
+        this.outCode = outCode;
         this.desc = desc;
     }
 
-    public static TencentSignApplyStatusEnum parseByCode(Integer code) {
-        return Arrays.stream(TencentSignApplyStatusEnum.values()).filter(applyStatusEnum -> applyStatusEnum.code.equals(code)).findFirst().orElse(null);
+    public static TencentApplyStatusEnum parseByCode(Integer outCode) {
+        return Arrays.stream(TencentApplyStatusEnum.values()).filter(applyStatusEnum -> applyStatusEnum.outCode.equals(outCode)).findFirst().orElse(null);
     }
 }

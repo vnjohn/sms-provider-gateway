@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.vnjohn.sms.entity.AbstractSMSSign;
+import org.vnjohn.sms.entity.AbstractSMSTemplate;
 
 /**
  * @author vnjohn
@@ -14,18 +14,13 @@ import org.vnjohn.sms.entity.AbstractSMSSign;
  */
 @Data
 @SuperBuilder
-@NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class TencentRemoveTemplate extends AbstractSMSSign {
-    /**
-     * 模版ID（申请后会返回）
-     */
-    private Long id;
+public class TencentRemoveTemplate extends AbstractSMSTemplate {
 
     public DeleteSmsTemplateRequest toDeleteSmsTemplateRequest() {
         DeleteSmsTemplateRequest deleteTemplateRequest = new DeleteSmsTemplateRequest();
-        deleteTemplateRequest.setTemplateId(id);
+        deleteTemplateRequest.setTemplateId(Long.parseLong(getCode()));
         return deleteTemplateRequest;
     }
 

@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * 应用管理：https://console.cloud.tencent.com/smsv2
- * 密钥：https://console.cloud.tencent.com/cam/capi
  * @author vnjohn
  * @since 2023/3/17
  */

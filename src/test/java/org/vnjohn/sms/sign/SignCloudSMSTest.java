@@ -39,8 +39,8 @@ public class SignCloudSMSTest {
     @Resource
     private AbstractSMSService smsService;
 
-    public static MultipartFile getMultipartFile() {
-        File file = new File("/Users/vnjohn/Pictures/spring-boot.png");
+    public static MultipartFile getMultipartFile(String path) {
+        File file = new File(path);
         // 文件会在哪个目录创建
         FileItem fileItem;
         try {
@@ -67,13 +67,13 @@ public class SignCloudSMSTest {
     @Test
     public void createSign() {
         ApplySignDTO applySignDTO = new ApplySignDTO();
-        applySignDTO.setFile(getMultipartFile());
+        applySignDTO.setFile(getMultipartFile("/Users/vnjohn/Pictures/vnjohn-website.png"));
         applySignDTO.setName("vnjohn");
-        applySignDTO.setPurpose(SMSSignPurposeEnum.HE_USE.getCode());
+        applySignDTO.setPurpose(SMSSignPurposeEnum.PERSONAL_USE.getCode());
         applySignDTO.setSource(SMSSignSourceEnum.WEBSITE.getCode());
         applySignDTO.setRemark("https://www.vnjohn.com");
         // 若为阿里云无须传递
-        applySignDTO.setCertificationType(TencentDocumentTypeEnum.BACK_MANAGEMENT.getCode());
+        applySignDTO.setCertificationType(TencentDocumentTypeEnum.BACK_WEBSITE_RECORDS.getCode());
         applySignDTO.setType(SMSSignTypeEnum.OUTSIDE.getCode());
         AbstractSMSSign applySign = smsFactory.createApplySign(applySignDTO);
         smsService.applySign(applySign);

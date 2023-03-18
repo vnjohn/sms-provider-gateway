@@ -14,7 +14,7 @@ import org.vnjohn.sms.enums.SMSSignApplyStatusEnum;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SignStatusResponse {
+public class ApplyStatusResponse {
     /**
      * 签名审核状态
      * {@link SMSSignApplyStatusEnum}

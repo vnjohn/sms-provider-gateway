@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.vnjohn.sms.entity.AbstractSMSTemplate;
+import org.vnjohn.sms.enums.SMSTemplateTypeEnum;
 
 /**
  * 详见官方文档：
@@ -24,6 +25,7 @@ import org.vnjohn.sms.entity.AbstractSMSTemplate;
 public class AliApplyOrModifyTemplate extends AbstractSMSTemplate {
     /**
      * 短信类型
+     * {@link SMSTemplateTypeEnum}
      */
     private Integer type;
 

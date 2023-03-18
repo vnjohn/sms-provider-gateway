@@ -12,11 +12,10 @@ import org.vnjohn.sms.SMSCloudProviderConfig;
 import org.vnjohn.sms.SmsBusinessException;
 import org.vnjohn.sms.condition.AliCloudOnCondition;
 import org.vnjohn.sms.entity.AbstractSMSSign;
-import org.vnjohn.sms.entity.ali.AliApplyOrModifySign;
-import org.vnjohn.sms.entity.ali.AliRemoveSign;
-import org.vnjohn.sms.entity.ali.AliStatusSign;
+import org.vnjohn.sms.entity.AbstractSMSTemplate;
+import org.vnjohn.sms.entity.ali.*;
 import org.vnjohn.sms.enums.ali.AliCommonCodeEnum;
-import org.vnjohn.sms.response.SignStatusResponse;
+import org.vnjohn.sms.response.ApplyStatusResponse;
 import org.vnjohn.sms.utils.JacksonUtils;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -81,12 +80,12 @@ public class AliCloudSMSServiceImpl extends AbstractSMSService {
         AddSmsSignRequest addSmsSignRequest = applySign.toApplySmsSignRequest();
         try {
             AddSmsSignResponse applySmsSignResponse = getInstance().addSmsSign(addSmsSignRequest);
-            log.info("create ali sign，request【{}】，response【{}】", JacksonUtils.toJson(addSmsSignRequest), JacksonUtils.toJson(applySmsSignResponse));
+            log.info("apply ali sign，request【{}】，response【{}】", JacksonUtils.toJson(addSmsSignRequest), JacksonUtils.toJson(applySmsSignResponse));
             processResultByCode(applySmsSignResponse.getBody().getCode(), applySmsSignResponse.getBody().getMessage());
             return applySmsSignResponse.getBody().getSignName();
         } catch (TeaException teaException) {
             log.error("Ali applySign teaException：{}", teaException.getMessage());
-            throw new SmsBusinessException("create ali sign fail");
+            throw new SmsBusinessException("apply ali sign fail");
         } catch (Exception e) {
             log.error("Ali applySign Exception：{}", e.getMessage());
             throw new SmsBusinessException(e.getMessage());
@@ -130,20 +129,93 @@ public class AliCloudSMSServiceImpl extends AbstractSMSService {
     }
 
     @Override
-    public <T extends AbstractSMSSign> SignStatusResponse querySignApplyStatus(AbstractSMSSign statusSmsSign) {
+    public <T extends AbstractSMSSign> ApplyStatusResponse querySignApplyStatus(AbstractSMSSign statusSmsSign) {
         AliStatusSign statusSign = (AliStatusSign) statusSmsSign;
         QuerySmsSignRequest querySmsSignRequest = new QuerySmsSignRequest().setSignName(statusSign.getName());
         try {
             QuerySmsSignResponse querySmsSignResponse = getInstance().querySmsSign(querySmsSignRequest);
             log.info("query ali sign status，request【{}】，response【{}】", JacksonUtils.toJson(querySmsSignRequest), JacksonUtils.toJson(querySmsSignResponse));
             QuerySmsSignResponseBody body = querySmsSignResponse.getBody();
-            processResultByCode(querySmsSignResponse.getBody().getCode(), querySmsSignResponse.getBody().getMessage());
-            return SignStatusResponse.builder().status(body.getSignStatus()).reason(body.getReason()).build();
+            processResultByCode(body.getCode(), body.getMessage());
+            return ApplyStatusResponse.builder().status(body.getSignStatus()).reason(body.getReason()).build();
         } catch (TeaException teaException) {
             log.error("AliCloud querySmsSignStatus teaException：{}", teaException.getMessage());
             throw new SmsBusinessException("query ali sign status error");
         } catch (Exception e) {
             log.error("AliCloud querySmsSignStatus Exception：{}", e.getMessage());
+            throw new SmsBusinessException(e.getMessage());
+        }
+    }
+
+    @Override
+    public <T extends AbstractSMSTemplate> String applyTemplate(AbstractSMSTemplate applySmsTemplate) {
+        AliApplyOrModifyTemplate applyTemplate = (AliApplyOrModifyTemplate) applySmsTemplate;
+        AddSmsTemplateRequest addSmsTemplateRequest = applyTemplate.toAddSmsTemplateRequest();
+        try {
+            AddSmsTemplateResponse addSmsTemplateResponse = getInstance().addSmsTemplate(addSmsTemplateRequest);
+            log.info("apply ali template，request【{}】，response【{}】", JacksonUtils.toJson(addSmsTemplateRequest), JacksonUtils.toJson(addSmsTemplateResponse));
+            processResultByCode(addSmsTemplateResponse.getBody().getCode(), addSmsTemplateResponse.getBody().getMessage());
+            return addSmsTemplateResponse.getBody().getTemplateCode();
+        } catch (TeaException teaException) {
+            log.error("Ali applyTemplate teaException：{}", teaException.getMessage());
+            throw new SmsBusinessException("apply ali template error");
+        } catch (Exception e) {
+            log.error("Ali applyTemplate Exception：{}", e.getMessage());
+            throw new SmsBusinessException(e.getMessage());
+        }
+    }
+
+    @Override
+    public <T extends AbstractSMSTemplate> String modifyTemplate(AbstractSMSTemplate modifySmsTemplate) {
+        AliApplyOrModifyTemplate applyTemplate = (AliApplyOrModifyTemplate) modifySmsTemplate;
+        ModifySmsTemplateRequest modifySmsTemplateRequest = applyTemplate.toModifySmsTemplateRequest();
+        try {
+            ModifySmsTemplateResponse modifySmsTemplateResponse = getInstance().modifySmsTemplate(modifySmsTemplateRequest);
+            log.info("modify ali template，request【{}】，response【{}】", JacksonUtils.toJson(modifySmsTemplateRequest), JacksonUtils.toJson(modifySmsTemplateResponse));
+            processResultByCode(modifySmsTemplateResponse.getBody().getCode(), modifySmsTemplateResponse.getBody().getMessage());
+            return modifySmsTemplateResponse.getBody().getTemplateCode();
+        } catch (TeaException teaException) {
+            log.error("Ali modifyTemplate teaException：{}", teaException.getMessage());
+            throw new SmsBusinessException("modify ali template error");
+        } catch (Exception e) {
+            log.error("Ali modifyTemplate Exception：{}", e.getMessage());
+            throw new SmsBusinessException(e.getMessage());
+        }
+    }
+
+    @Override
+    public <T extends AbstractSMSTemplate> String removeTemplate(AbstractSMSTemplate removeSmsTemplate) {
+        AliRemoveTemplate removeTemplate = (AliRemoveTemplate) removeSmsTemplate;
+        DeleteSmsTemplateRequest deleteSmsTemplateRequest = removeTemplate.toDeleteSmsTemplateRequest();
+        try {
+            DeleteSmsTemplateResponse deleteSmsTemplateResponse = getInstance().deleteSmsTemplate(deleteSmsTemplateRequest);
+            log.info("remove ali template，request【{}】，response【{}】", JacksonUtils.toJson(deleteSmsTemplateRequest), JacksonUtils.toJson(deleteSmsTemplateResponse));
+            processResultByCode(deleteSmsTemplateResponse.getBody().getCode(), deleteSmsTemplateResponse.getBody().getMessage());
+            return deleteSmsTemplateResponse.getBody().getTemplateCode();
+        } catch (TeaException teaException) {
+            log.error("Ali removeTemplate teaException：{}", teaException.getMessage());
+            throw new SmsBusinessException("remove ali template error");
+        } catch (Exception e) {
+            log.error("Ali removeTemplate Exception：{}", e.getMessage());
+            throw new SmsBusinessException(e.getMessage());
+        }
+    }
+
+    @Override
+    public <T extends AbstractSMSTemplate> ApplyStatusResponse queryTemplateApplyStatus(AbstractSMSTemplate statusSmsTemplate) {
+        AliStatusTemplate statusTemplate = (AliStatusTemplate) statusSmsTemplate;
+        QuerySmsTemplateRequest querySmsTemplateRequest = new QuerySmsTemplateRequest().setTemplateCode(statusTemplate.getCode());
+        try {
+            QuerySmsTemplateResponse querySmsTemplateResponse = getInstance().querySmsTemplate(querySmsTemplateRequest);
+            log.info("status ali template，request【{}】，response【{}】", JacksonUtils.toJson(querySmsTemplateRequest), JacksonUtils.toJson(querySmsTemplateResponse));
+            QuerySmsTemplateResponseBody body = querySmsTemplateResponse.getBody();
+            processResultByCode(body.getCode(), body.getMessage());
+            return ApplyStatusResponse.builder().status(body.getTemplateStatus()).reason(body.getReason()).build();
+        } catch (TeaException teaException) {
+            log.error("Ali queryTemplateApplyStatus teaException：{}", teaException.getMessage());
+            throw new SmsBusinessException("status ali template error");
+        } catch (Exception e) {
+            log.error("Ali queryTemplateApplyStatus Exception：{}", e.getMessage());
             throw new SmsBusinessException(e.getMessage());
         }
     }

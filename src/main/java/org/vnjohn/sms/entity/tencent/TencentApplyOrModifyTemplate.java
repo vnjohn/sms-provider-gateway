@@ -7,7 +7,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.vnjohn.sms.entity.AbstractSMSSign;
+import org.vnjohn.sms.entity.AbstractSMSTemplate;
+import org.vnjohn.sms.enums.SMSSmsTypeEnum;
+import org.vnjohn.sms.enums.tencent.TencentSMSTypeEnum;
 
 /**
  * 详见官方文档：https://cloud.tencent.com/document/product/382/55974
@@ -19,12 +21,7 @@ import org.vnjohn.sms.entity.AbstractSMSSign;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class TencentApplyOrModifyTemplate extends AbstractSMSSign {
-    /**
-     * 模版ID（申请后会返回）
-     */
-    private Long id;
-
+public class TencentApplyOrModifyTemplate extends AbstractSMSTemplate {
     /**
      * 模版名称
      */
@@ -37,11 +34,13 @@ public class TencentApplyOrModifyTemplate extends AbstractSMSSign {
 
     /**
      * 是否国际/港澳台短信：0：表示国内短信、1：表示国际/港澳台短信
+     * {@link TencentSMSTypeEnum}
      */
     private Integer international;
 
     /**
      * 短信类型：0-普通短信、1-营销短信
+     * {@link SMSSmsTypeEnum}
      */
     private Integer type;
 
@@ -50,7 +49,7 @@ public class TencentApplyOrModifyTemplate extends AbstractSMSSign {
      */
     private String remark;
 
-    public AddSmsTemplateRequest toAddSmsSignRequest() {
+    public AddSmsTemplateRequest toAddSmsTemplateRequest() {
         AddSmsTemplateRequest applyTemplateRequest = new AddSmsTemplateRequest();
         applyTemplateRequest.setTemplateName(getName());
         applyTemplateRequest.setTemplateContent(content);
@@ -60,9 +59,9 @@ public class TencentApplyOrModifyTemplate extends AbstractSMSSign {
         return applyTemplateRequest;
     }
 
-    public ModifySmsTemplateRequest toModifySmsSignResponse() {
+    public ModifySmsTemplateRequest toModifySmsTemplateRequest() {
         ModifySmsTemplateRequest modifyTemplateRequest = new ModifySmsTemplateRequest();
-        modifyTemplateRequest.setTemplateId(id);
+        modifyTemplateRequest.setTemplateId(Long.valueOf(getCode()));
         modifyTemplateRequest.setTemplateName(getName());
         modifyTemplateRequest.setTemplateContent(content);
         modifyTemplateRequest.setSmsType(type.longValue());

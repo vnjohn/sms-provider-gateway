@@ -6,7 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.vnjohn.sms.entity.AbstractSMSSign;
+import org.vnjohn.sms.entity.AbstractSMSTemplate;
+import org.vnjohn.sms.enums.tencent.TencentSMSTypeEnum;
 
 /**
  * @author vnjohn
@@ -14,32 +15,19 @@ import org.vnjohn.sms.entity.AbstractSMSSign;
  */
 @Data
 @SuperBuilder
+@NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class TencentStatusTemplate extends AbstractSMSSign {
-    /**
-     * 模版ID（申请后会返回）
-     */
-    private Long id;
-
+public class TencentStatusTemplate extends AbstractSMSTemplate {
     /**
      * 是否国际/港澳台短信：0：表示国内短信、1：表示国际/港澳台短信
+     * {@link TencentSMSTypeEnum}
      */
     private Integer international;
 
-    /**
-     * 最大上限，最多100
-     */
-    private Integer limit;
-
-    /**
-     * 偏移量
-     */
-    private Integer offset;
-
-    public DescribeSmsTemplateListRequest toDeleteSmsTemplateRequest() {
+    public DescribeSmsTemplateListRequest toDescribeSmsTemplateListRequest() {
         DescribeSmsTemplateListRequest statusTemplateRequest = new DescribeSmsTemplateListRequest();
-        statusTemplateRequest.setTemplateIdSet(new Long[]{id});
+        statusTemplateRequest.setTemplateIdSet(new Long[]{Long.parseLong(getCode())});
         statusTemplateRequest.setInternational(international.longValue());
         return statusTemplateRequest;
     }
