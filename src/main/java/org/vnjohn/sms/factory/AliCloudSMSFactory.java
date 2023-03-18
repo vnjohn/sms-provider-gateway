@@ -5,10 +5,8 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.vnjohn.sms.condition.AliCloudOnCondition;
-import org.vnjohn.sms.dto.ApplySignDTO;
-import org.vnjohn.sms.dto.ApplyTemplateDTO;
-import org.vnjohn.sms.dto.ModifySignDTO;
-import org.vnjohn.sms.dto.ModifyTemplateDTO;
+import org.vnjohn.sms.dto.*;
+import org.vnjohn.sms.entity.AbstractSMSSendSms;
 import org.vnjohn.sms.entity.AbstractSMSShortLink;
 import org.vnjohn.sms.entity.AbstractSMSSign;
 import org.vnjohn.sms.entity.AbstractSMSTemplate;
@@ -36,16 +34,16 @@ public class AliCloudSMSFactory extends AbstractSMSFactory {
     private static final String FILE_CONTENT = "FileContents";
 
     @Override
-    public <T extends AbstractSMSSign> AbstractSMSSign createApplySign(ApplySignDTO applySignDTO) {
+    public <T extends AbstractSMSSign> AliApplyOrModifySign createApplySign(ApplySignDTO applySignDTO) {
         return getAbstractSMSSign(applySignDTO.getSource(), applySignDTO.getType(), applySignDTO.getFile(), applySignDTO.getName(), applySignDTO.getRemark());
     }
 
     @Override
-    public <T extends AbstractSMSSign> AbstractSMSSign createModifySign(ModifySignDTO modifySignDTO) {
+    public <T extends AbstractSMSSign> AliApplyOrModifySign createModifySign(ModifySignDTO modifySignDTO) {
         return getAbstractSMSSign(modifySignDTO.getSource(), modifySignDTO.getType(), modifySignDTO.getFile(), modifySignDTO.getName(), modifySignDTO.getRemark());
     }
 
-    private AbstractSMSSign getAbstractSMSSign(Integer source, Integer type, MultipartFile file, String name, String remark) {
+    private AliApplyOrModifySign getAbstractSMSSign(Integer source, Integer type, MultipartFile file, String name, String remark) {
         AliSignSourceEnum signSourceEnum = checkAliSignSource(source);
         AliSignTypeEnum signTypeEnum = checkAliSignType(type);
         String fileContent = processFileContent(file);
@@ -59,17 +57,17 @@ public class AliCloudSMSFactory extends AbstractSMSFactory {
     }
 
     @Override
-    public <T extends AbstractSMSSign> AbstractSMSSign createRemoveSign(Long signId, String signName) {
+    public <T extends AbstractSMSSign> AliRemoveSign createRemoveSign(Long signId, String signName) {
         return AliRemoveSign.builder().name(signName).build();
     }
 
     @Override
-    public <T extends AbstractSMSSign> AbstractSMSSign createQuerySignStatus(Long signId, String signName) {
+    public <T extends AbstractSMSSign> AliStatusSign createQuerySignStatus(Long signId, String signName, Integer type) {
         return AliStatusSign.builder().name(signName).build();
     }
 
     @Override
-    public <T extends AbstractSMSTemplate> AbstractSMSTemplate createApplyTemplate(ApplyTemplateDTO applyTemplateDTO) {
+    public <T extends AbstractSMSTemplate> AliApplyOrModifyTemplate createApplyTemplate(ApplyTemplateDTO applyTemplateDTO) {
         SMSTemplateTypeEnum templateTypeEnum = checkTemplateType(applyTemplateDTO.getType());
         return AliApplyOrModifyTemplate.builder()
                                        .name(applyTemplateDTO.getName())
@@ -80,7 +78,7 @@ public class AliCloudSMSFactory extends AbstractSMSFactory {
     }
 
     @Override
-    public <T extends AbstractSMSTemplate> AbstractSMSTemplate createModifyTemplate(ModifyTemplateDTO modifyTemplateDTO) {
+    public <T extends AbstractSMSTemplate> AliApplyOrModifyTemplate createModifyTemplate(ModifyTemplateDTO modifyTemplateDTO) {
         SMSTemplateTypeEnum templateTypeEnum = checkTemplateType(modifyTemplateDTO.getType());
         return AliApplyOrModifyTemplate.builder()
                                        .code(modifyTemplateDTO.getCode())
@@ -92,18 +90,23 @@ public class AliCloudSMSFactory extends AbstractSMSFactory {
     }
 
     @Override
-    public <T extends AbstractSMSTemplate> AbstractSMSTemplate createRemoveTemplate(String code) {
+    public <T extends AbstractSMSTemplate> AliRemoveTemplate createRemoveTemplate(String code) {
         return AliRemoveTemplate.builder().code(code).build();
     }
 
     @Override
-    public <T extends AbstractSMSTemplate> AbstractSMSTemplate createQueryTemplateStatus(Integer type, String code) {
+    public <T extends AbstractSMSTemplate> AliStatusTemplate createQueryTemplateStatus(Integer type, String code) {
         return AliStatusTemplate.builder().code(code).build();
     }
 
     @Override
-    public <T extends AbstractSMSShortLink> AbstractSMSSign createShortLink() {
-        return super.createShortLink();
+    public <T extends AbstractSMSSendSms> AbstractSMSSendSms createSendSms(SendSmsDTO sendSmsDTO) {
+        return null;
+    }
+
+    @Override
+    public <T extends AbstractSMSShortLink> String createShortLink() {
+        return null;
     }
 
     @NotNull

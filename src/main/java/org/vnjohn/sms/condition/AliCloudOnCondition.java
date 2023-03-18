@@ -7,6 +7,8 @@ import org.vnjohn.sms.constants.Constants;
 import org.vnjohn.sms.enums.SMSCloudProviderEnum;
 
 /**
+ * sms.provider.service=AliCloud 注入 Bean：AliCloudSMSFactory、AliCloudSMSServiceImpl
+ *
  * @author vnjohn
  * @since 2023/3/17
  */

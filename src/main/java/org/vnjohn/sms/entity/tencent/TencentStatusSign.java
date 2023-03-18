@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.vnjohn.sms.entity.AbstractSMSSign;
+import org.vnjohn.sms.enums.tencent.TencentSMSTypeEnum;
 
 /**
  * @author vnjohn
@@ -25,6 +26,7 @@ public class TencentStatusSign extends AbstractSMSSign {
 
     /**
      * 是否国际/港澳台短信：0：表示国内短信、1：表示国际/港澳台短信
+     * {@link TencentSMSTypeEnum}
      */
     private Integer international;
 

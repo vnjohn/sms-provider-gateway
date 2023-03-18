@@ -1,5 +1,6 @@
 package org.vnjohn.sms.service;
 
+import org.vnjohn.sms.entity.AbstractSMSSendSms;
 import org.vnjohn.sms.entity.AbstractSMSSign;
 import org.vnjohn.sms.entity.AbstractSMSTemplate;
 import org.vnjohn.sms.response.ApplyStatusResponse;
@@ -17,9 +18,7 @@ public abstract class AbstractSMSService {
      * @param applySmsSign
      * @param <T>
      */
-    public <T extends AbstractSMSSign> String applySign(AbstractSMSSign applySmsSign) {
-        return null;
-    }
+    public abstract <T extends AbstractSMSSign> String applySign(AbstractSMSSign applySmsSign);
 
     /**
      * 更新签名
@@ -54,13 +53,12 @@ public abstract class AbstractSMSService {
 
     /**
      * 申请模版
+     *
      * @param applySmsTemplate
      * @param <T>
      * @return 返回模版唯一标识
      */
-    public <T extends AbstractSMSTemplate> String applyTemplate(AbstractSMSTemplate applySmsTemplate) {
-        return null;
-    }
+    public abstract <T extends AbstractSMSTemplate> String applyTemplate(AbstractSMSTemplate applySmsTemplate);
 
     /**
      * 更新模版
@@ -92,5 +90,23 @@ public abstract class AbstractSMSService {
     public <T extends AbstractSMSTemplate> ApplyStatusResponse queryTemplateApplyStatus(AbstractSMSTemplate statusSmsTemplate) {
         return null;
     }
+
+    /**
+     * 发送短信
+     *
+     * @param sendSms
+     * @param <T>
+     * @return
+     */
+    public abstract <T extends AbstractSMSSendSms> String sendSms(AbstractSMSSendSms sendSms);
+
+    /**
+     * 通过第三方服务商返回的编码进行消息处理
+     *
+     * @param code
+     * @param message
+     * @return
+     */
+    public abstract void processMessageByCode(String code, String message);
 
 }

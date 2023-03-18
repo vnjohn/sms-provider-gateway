@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.vnjohn.sms.SMSCloudProviderConfig;
 import org.vnjohn.sms.SmsBusinessException;
 import org.vnjohn.sms.condition.AliCloudOnCondition;
+import org.vnjohn.sms.entity.AbstractSMSSendSms;
 import org.vnjohn.sms.entity.AbstractSMSSign;
 import org.vnjohn.sms.entity.AbstractSMSTemplate;
 import org.vnjohn.sms.entity.ali.*;
@@ -81,7 +82,7 @@ public class AliCloudSMSServiceImpl extends AbstractSMSService {
         try {
             AddSmsSignResponse applySmsSignResponse = getInstance().addSmsSign(addSmsSignRequest);
             log.info("apply ali sign，request【{}】，response【{}】", JacksonUtils.toJson(addSmsSignRequest), JacksonUtils.toJson(applySmsSignResponse));
-            processResultByCode(applySmsSignResponse.getBody().getCode(), applySmsSignResponse.getBody().getMessage());
+            processMessageByCode(applySmsSignResponse.getBody().getCode(), applySmsSignResponse.getBody().getMessage());
             return applySmsSignResponse.getBody().getSignName();
         } catch (TeaException teaException) {
             log.error("Ali applySign teaException：{}", teaException.getMessage());
@@ -99,7 +100,7 @@ public class AliCloudSMSServiceImpl extends AbstractSMSService {
         try {
             ModifySmsSignResponse modifySmsSignResponse = getInstance().modifySmsSign(modifySmsSignRequest);
             log.info("modify ali sign，request【{}】，response【{}】", JacksonUtils.toJson(modifySmsSignRequest), JacksonUtils.toJson(modifySmsSignResponse));
-            processResultByCode(modifySmsSignResponse.getBody().getCode(), modifySmsSignResponse.getBody().getMessage());
+            processMessageByCode(modifySmsSignResponse.getBody().getCode(), modifySmsSignResponse.getBody().getMessage());
             return modifySmsSignResponse.getBody().getSignName();
         } catch (TeaException teaException) {
             log.error("Ali modifySign teaException：{}", teaException.getMessage());
@@ -117,7 +118,7 @@ public class AliCloudSMSServiceImpl extends AbstractSMSService {
         try {
             DeleteSmsSignResponse deleteSmsSignResponse = getInstance().deleteSmsSign(deleteSmsSignRequest);
             log.info("remove ali sign，request【{}】，response【{}】", JacksonUtils.toJson(deleteSmsSignRequest), JacksonUtils.toJson(deleteSmsSignResponse));
-            processResultByCode(deleteSmsSignResponse.getBody().getCode(), deleteSmsSignResponse.getBody().getMessage());
+            processMessageByCode(deleteSmsSignResponse.getBody().getCode(), deleteSmsSignResponse.getBody().getMessage());
             return deleteSmsSignResponse.getBody().getCode();
         } catch (TeaException teaException) {
             log.error("Ali removeSign teaException：{}", teaException.getMessage());
@@ -136,7 +137,7 @@ public class AliCloudSMSServiceImpl extends AbstractSMSService {
             QuerySmsSignResponse querySmsSignResponse = getInstance().querySmsSign(querySmsSignRequest);
             log.info("query ali sign status，request【{}】，response【{}】", JacksonUtils.toJson(querySmsSignRequest), JacksonUtils.toJson(querySmsSignResponse));
             QuerySmsSignResponseBody body = querySmsSignResponse.getBody();
-            processResultByCode(body.getCode(), body.getMessage());
+            processMessageByCode(body.getCode(), body.getMessage());
             return ApplyStatusResponse.builder().status(body.getSignStatus()).reason(body.getReason()).build();
         } catch (TeaException teaException) {
             log.error("AliCloud querySmsSignStatus teaException：{}", teaException.getMessage());
@@ -154,7 +155,7 @@ public class AliCloudSMSServiceImpl extends AbstractSMSService {
         try {
             AddSmsTemplateResponse addSmsTemplateResponse = getInstance().addSmsTemplate(addSmsTemplateRequest);
             log.info("apply ali template，request【{}】，response【{}】", JacksonUtils.toJson(addSmsTemplateRequest), JacksonUtils.toJson(addSmsTemplateResponse));
-            processResultByCode(addSmsTemplateResponse.getBody().getCode(), addSmsTemplateResponse.getBody().getMessage());
+            processMessageByCode(addSmsTemplateResponse.getBody().getCode(), addSmsTemplateResponse.getBody().getMessage());
             return addSmsTemplateResponse.getBody().getTemplateCode();
         } catch (TeaException teaException) {
             log.error("Ali applyTemplate teaException：{}", teaException.getMessage());
@@ -172,7 +173,7 @@ public class AliCloudSMSServiceImpl extends AbstractSMSService {
         try {
             ModifySmsTemplateResponse modifySmsTemplateResponse = getInstance().modifySmsTemplate(modifySmsTemplateRequest);
             log.info("modify ali template，request【{}】，response【{}】", JacksonUtils.toJson(modifySmsTemplateRequest), JacksonUtils.toJson(modifySmsTemplateResponse));
-            processResultByCode(modifySmsTemplateResponse.getBody().getCode(), modifySmsTemplateResponse.getBody().getMessage());
+            processMessageByCode(modifySmsTemplateResponse.getBody().getCode(), modifySmsTemplateResponse.getBody().getMessage());
             return modifySmsTemplateResponse.getBody().getTemplateCode();
         } catch (TeaException teaException) {
             log.error("Ali modifyTemplate teaException：{}", teaException.getMessage());
@@ -190,7 +191,7 @@ public class AliCloudSMSServiceImpl extends AbstractSMSService {
         try {
             DeleteSmsTemplateResponse deleteSmsTemplateResponse = getInstance().deleteSmsTemplate(deleteSmsTemplateRequest);
             log.info("remove ali template，request【{}】，response【{}】", JacksonUtils.toJson(deleteSmsTemplateRequest), JacksonUtils.toJson(deleteSmsTemplateResponse));
-            processResultByCode(deleteSmsTemplateResponse.getBody().getCode(), deleteSmsTemplateResponse.getBody().getMessage());
+            processMessageByCode(deleteSmsTemplateResponse.getBody().getCode(), deleteSmsTemplateResponse.getBody().getMessage());
             return deleteSmsTemplateResponse.getBody().getTemplateCode();
         } catch (TeaException teaException) {
             log.error("Ali removeTemplate teaException：{}", teaException.getMessage());
@@ -209,7 +210,7 @@ public class AliCloudSMSServiceImpl extends AbstractSMSService {
             QuerySmsTemplateResponse querySmsTemplateResponse = getInstance().querySmsTemplate(querySmsTemplateRequest);
             log.info("status ali template，request【{}】，response【{}】", JacksonUtils.toJson(querySmsTemplateRequest), JacksonUtils.toJson(querySmsTemplateResponse));
             QuerySmsTemplateResponseBody body = querySmsTemplateResponse.getBody();
-            processResultByCode(body.getCode(), body.getMessage());
+            processMessageByCode(body.getCode(), body.getMessage());
             return ApplyStatusResponse.builder().status(body.getTemplateStatus()).reason(body.getReason()).build();
         } catch (TeaException teaException) {
             log.error("Ali queryTemplateApplyStatus teaException：{}", teaException.getMessage());
@@ -220,10 +221,17 @@ public class AliCloudSMSServiceImpl extends AbstractSMSService {
         }
     }
 
+    @Override
+    public <T extends AbstractSMSSendSms> String sendSms(AbstractSMSSendSms sendSms) {
+        return null;
+    }
+
+
     /**
      * 处理调用结果返回状态码，message：API 返回的错误消息更详细，不存在，就需状态枚举错误消息
      */
-    public void processResultByCode(String code, String message) {
+    @Override
+    public void processMessageByCode(String code, String message) {
         AliCommonCodeEnum aliErrorCodeEnum = AliCommonCodeEnum.parseByCode(code);
         if (aliErrorCodeEnum != null && aliErrorCodeEnum.getCode().equals(AliCommonCodeEnum.OK.getCode())) {
             return;

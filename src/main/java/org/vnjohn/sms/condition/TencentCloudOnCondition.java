@@ -7,6 +7,8 @@ import org.vnjohn.sms.constants.Constants;
 import org.vnjohn.sms.enums.SMSCloudProviderEnum;
 
 /**
+ * sms.provider.service=TencentCloud 注入 Bean：TencentCloudSMSFactory、TencentCloudSMSServiceImpl
+ *
  * @author vnjohn
  * @since 2023/3/17
  */

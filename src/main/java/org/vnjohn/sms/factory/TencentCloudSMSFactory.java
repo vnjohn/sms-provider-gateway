@@ -4,10 +4,8 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 import org.vnjohn.sms.condition.TencentCloudOnCondition;
-import org.vnjohn.sms.dto.ApplySignDTO;
-import org.vnjohn.sms.dto.ApplyTemplateDTO;
-import org.vnjohn.sms.dto.ModifySignDTO;
-import org.vnjohn.sms.dto.ModifyTemplateDTO;
+import org.vnjohn.sms.dto.*;
+import org.vnjohn.sms.entity.AbstractSMSSendSms;
 import org.vnjohn.sms.entity.AbstractSMSShortLink;
 import org.vnjohn.sms.entity.AbstractSMSSign;
 import org.vnjohn.sms.entity.AbstractSMSTemplate;
@@ -32,7 +30,7 @@ import static org.vnjohn.sms.SmsBusinessException.throwNull;
 public class TencentCloudSMSFactory extends AbstractSMSFactory {
 
     @Override
-    public <T extends AbstractSMSSign> AbstractSMSSign createApplySign(ApplySignDTO applySignDTO) {
+    public <T extends AbstractSMSSign> TencentApplyOrModifySign createApplySign(ApplySignDTO applySignDTO) {
         TencentSMSTypeEnum signTypeEnum = checkTencentSignType(applySignDTO.getType());
         TencentDocumentTypeEnum certificationTypeEnum = checkCertificationType(applySignDTO.getCertificationType());
         TencentSignSourceEnum signSourceEnum = checkTencentSignSource(applySignDTO.getSource(), certificationTypeEnum);
@@ -49,7 +47,7 @@ public class TencentCloudSMSFactory extends AbstractSMSFactory {
     }
 
     @Override
-    public <T extends AbstractSMSSign> AbstractSMSSign createModifySign(ModifySignDTO modifySignDTO) {
+    public <T extends AbstractSMSSign> TencentApplyOrModifySign createModifySign(ModifySignDTO modifySignDTO) {
         TencentSMSTypeEnum signTypeEnum = checkTencentSignType(modifySignDTO.getType());
         TencentDocumentTypeEnum certificationTypeEnum = checkCertificationType(modifySignDTO.getCertificationType());
         TencentSignSourceEnum signSourceEnum = checkTencentSignSource(modifySignDTO.getSource(), certificationTypeEnum);
@@ -67,17 +65,18 @@ public class TencentCloudSMSFactory extends AbstractSMSFactory {
     }
 
     @Override
-    public <T extends AbstractSMSSign> AbstractSMSSign createRemoveSign(Long signId, String signName) {
+    public <T extends AbstractSMSSign> TencentRemoveSign createRemoveSign(Long signId, String signName) {
         return TencentRemoveSign.builder().id(signId).name(signName).build();
     }
 
     @Override
-    public <T extends AbstractSMSSign> AbstractSMSSign createQuerySignStatus(Long signId, String signName) {
-        return TencentStatusSign.builder().id(signId).name(signName).build();
+    public <T extends AbstractSMSSign> TencentStatusSign createQuerySignStatus(Long signId, String signName, Integer type) {
+        TencentSMSTypeEnum signTypeEnum = checkTencentSignType(type);
+        return TencentStatusSign.builder().id(signId).name(signName).international(signTypeEnum.getOutCode()).build();
     }
 
     @Override
-    public <T extends AbstractSMSTemplate> AbstractSMSTemplate createApplyTemplate(ApplyTemplateDTO applyTemplateDTO) {
+    public <T extends AbstractSMSTemplate> TencentApplyOrModifyTemplate createApplyTemplate(ApplyTemplateDTO applyTemplateDTO) {
         TencentSMSTypeEnum templateTypeEnum = checkTencentTemplateType(applyTemplateDTO.getType());
         SMSSmsTypeEnum smsTypeEnum = checkTencentSmsType(applyTemplateDTO.getSmsType());
         return TencentApplyOrModifyTemplate.builder()
@@ -90,7 +89,7 @@ public class TencentCloudSMSFactory extends AbstractSMSFactory {
     }
 
     @Override
-    public <T extends AbstractSMSTemplate> AbstractSMSTemplate createModifyTemplate(ModifyTemplateDTO modifyTemplateDTO) {
+    public <T extends AbstractSMSTemplate> TencentApplyOrModifyTemplate createModifyTemplate(ModifyTemplateDTO modifyTemplateDTO) {
         TencentSMSTypeEnum templateTypeEnum = checkTencentTemplateType(modifyTemplateDTO.getType());
         SMSSmsTypeEnum smsTypeEnum = checkTencentSmsType(modifyTemplateDTO.getSmsType());
         return TencentApplyOrModifyTemplate.builder()
@@ -104,19 +103,24 @@ public class TencentCloudSMSFactory extends AbstractSMSFactory {
     }
 
     @Override
-    public <T extends AbstractSMSTemplate> AbstractSMSTemplate createRemoveTemplate(String code) {
+    public <T extends AbstractSMSTemplate> TencentRemoveTemplate createRemoveTemplate(String code) {
         return TencentRemoveTemplate.builder().code(code).build();
     }
 
     @Override
-    public <T extends AbstractSMSTemplate> AbstractSMSTemplate createQueryTemplateStatus(Integer type, String code) {
+    public <T extends AbstractSMSTemplate> TencentStatusTemplate createQueryTemplateStatus(Integer type, String code) {
         TencentSMSTypeEnum smsTypeEnum = checkTencentTemplateType(type);
         return TencentStatusTemplate.builder().code(code).international(smsTypeEnum.getOutCode()).build();
     }
 
     @Override
-    public <T extends AbstractSMSShortLink> AbstractSMSSign createShortLink() {
-        return super.createShortLink();
+    public <T extends AbstractSMSShortLink> String createShortLink() {
+        return null;
+    }
+
+    @Override
+    public <T extends AbstractSMSSendSms> AbstractSMSSendSms createSendSms(SendSmsDTO sendSmsDTO) {
+        return null;
     }
 
     @NotNull

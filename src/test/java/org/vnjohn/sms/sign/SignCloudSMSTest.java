@@ -67,15 +67,21 @@ public class SignCloudSMSTest {
     @Test
     public void createSign() {
         ApplySignDTO applySignDTO = new ApplySignDTO();
-        applySignDTO.setFile(getMultipartFile("/Users/vnjohn/Pictures/vnjohn-website.png"));
-        applySignDTO.setName("vnjohn");
-        applySignDTO.setPurpose(SMSSignPurposeEnum.PERSONAL_USE.getCode());
-        applySignDTO.setSource(SMSSignSourceEnum.WEBSITE.getCode());
-        applySignDTO.setRemark("https://www.vnjohn.com");
+        applySignDTO.setFile(getMultipartFile("/Users/vnjohn/Pictures/shangye.png"));
+        applySignDTO.setName("星未");
+        applySignDTO.setPurpose(SMSSignPurposeEnum.HE_USE.getCode());
+        applySignDTO.setSource(SMSSignSourceEnum.TRADEMARK.getCode());
+        applySignDTO.setRemark("公司业务扩展需要");
         // 若为阿里云无须传递
-        applySignDTO.setCertificationType(TencentDocumentTypeEnum.BACK_WEBSITE_RECORDS.getCode());
+        applySignDTO.setCertificationType(TencentDocumentTypeEnum.TRADEMARK_REGISTRATION.getCode());
         applySignDTO.setType(SMSSignTypeEnum.OUTSIDE.getCode());
         AbstractSMSSign applySign = smsFactory.createApplySign(applySignDTO);
-        smsService.applySign(applySign);
+        System.out.println(smsService.applySign(applySign));
+    }
+
+    @Test
+    public void querySignApplyStatus() {
+        AbstractSMSSign applySign = smsFactory.createQuerySignStatus(518715L, "星未", SMSSignTypeEnum.OUTSIDE.getCode());
+        System.out.println(smsService.querySignApplyStatus(applySign));
     }
 }
