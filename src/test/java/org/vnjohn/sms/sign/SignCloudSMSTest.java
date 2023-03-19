@@ -10,6 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.vnjohn.sms.dto.ApplySignDTO;
+import org.vnjohn.sms.dto.ModifySignDTO;
 import org.vnjohn.sms.entity.AbstractSMSSign;
 import org.vnjohn.sms.enums.SMSSignPurposeEnum;
 import org.vnjohn.sms.enums.SMSSignSourceEnum;
@@ -77,6 +78,23 @@ public class SignCloudSMSTest {
         applySignDTO.setType(SMSSignTypeEnum.OUTSIDE.getCode());
         AbstractSMSSign applySign = smsFactory.createApplySign(applySignDTO);
         System.out.println(smsService.applySign(applySign));
+    }
+
+    @Test
+    public void modifySign() {
+        ModifySignDTO modifySignDTO = new ModifySignDTO();
+        // 阿里云无须传递
+        modifySignDTO.setId(518715L);
+        modifySignDTO.setFile(getMultipartFile("/Users/vnjohn/Pictures/shangye.png"));
+        modifySignDTO.setName("xxx");
+        modifySignDTO.setPurpose(SMSSignPurposeEnum.HE_USE.getCode());
+        modifySignDTO.setSource(SMSSignSourceEnum.TRADEMARK.getCode());
+        modifySignDTO.setRemark("公司业务扩展需要");
+        // 阿里云无须传递
+        modifySignDTO.setCertificationType(TencentDocumentTypeEnum.TRADEMARK_REGISTRATION.getCode());
+        modifySignDTO.setType(SMSSignTypeEnum.OUTSIDE.getCode());
+        AbstractSMSSign applySign = smsFactory.createModifySign(modifySignDTO);
+        System.out.println(smsService.modifySign(applySign));
     }
 
     @Test
