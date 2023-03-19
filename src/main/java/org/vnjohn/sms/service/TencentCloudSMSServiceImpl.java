@@ -33,6 +33,7 @@ import static org.vnjohn.sms.SmsBusinessException.throwNull;
 /**
  * 应用管理：https://console.cloud.tencent.com/smsv2
  * 密钥：https://console.cloud.tencent.com/cam/capi
+ *
  * @author vnjohn
  * @since 2023/3/17
  */
@@ -72,13 +73,14 @@ public class TencentCloudSMSServiceImpl extends AbstractSMSService {
      */
     private static final class SingletonClientHolder {
         static SmsClient SINGLETON_CLIENT = null;
+
         static {
             try {
                 Credential cred = new Credential(ACCESS_KEY, SECRET);
                 HttpProfile httpProfile = new HttpProfile();
                 httpProfile.setEndpoint(END_POINT);
                 // 实例化要请求产品的 client 对象,clientProfile 是可选的
-                SINGLETON_CLIENT= new SmsClient(cred, REGION);
+                SINGLETON_CLIENT = new SmsClient(cred, REGION);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -95,8 +97,7 @@ public class TencentCloudSMSServiceImpl extends AbstractSMSService {
         AddSmsSignRequest addSmsSignRequest = applySign.toAddSmsSignRequest();
         try {
             AddSmsSignResponse applySmsSignResponse = getInstance().AddSmsSign(addSmsSignRequest);
-            replaceTooShortParamToPrint(addSmsSignRequest);
-            log.info("apply tencent sign，request【{}】，response【{}】", JacksonUtils.toJson(addSmsSignRequest), JacksonUtils.toJson(applySmsSignResponse));
+            log.info("apply tencent sign，request【{}】，response【{}】", JacksonUtils.toJson(applySign), JacksonUtils.toJson(applySmsSignResponse));
             return String.valueOf(applySmsSignResponse.getAddSignStatus().getSignId());
         } catch (TencentCloudSDKException sdkException) {
             log.error("Tencent applySign sdkException：{}", sdkException.getMessage());
@@ -114,8 +115,7 @@ public class TencentCloudSMSServiceImpl extends AbstractSMSService {
         ModifySmsSignRequest modifySmsSignRequest = modifySign.toModifySmsSignRequest();
         try {
             ModifySmsSignResponse modifySmsSignResponse = getInstance().ModifySmsSign(modifySmsSignRequest);
-            replaceTooShortParamToPrint(modifySmsSignResponse);
-            log.info("modify tencent sign，request【{}】，response【{}】", JacksonUtils.toJson(modifySmsSignRequest), JacksonUtils.toJson(modifySmsSignResponse));
+            log.info("modify tencent sign，request【{}】，response【{}】", JacksonUtils.toJson(modifySign), JacksonUtils.toJson(modifySmsSignResponse));
             return String.valueOf(modifySmsSignResponse.getModifySignStatus().getSignId());
         } catch (TencentCloudSDKException sdkException) {
             log.error("Tencent modifySign sdkException：{}", sdkException.getMessage());
@@ -265,21 +265,6 @@ public class TencentCloudSMSServiceImpl extends AbstractSMSService {
         TencentCommonCodeEnum tencentCommonCodeEnum = TencentCommonCodeEnum.parseByCode(code);
         String throwMessage = null == tencentCommonCodeEnum ? String.format("该异常码%s未匹配，请查看对应错误码文档：https://cloud.tencent.com/document/api/382/52075", code) : tencentCommonCodeEnum.getMessage();
         throwBusinessException(throwMessage);
-    }
-
-    /**
-     * 替换过长的字符，防止请求日志：图片 base64 编码字符过长
-     *
-     * @param clazz
-     * @param <T>
-     */
-    public <T extends AbstractModel> void replaceTooShortParamToPrint(AbstractModel clazz) {
-        try {
-            Field proofImage = clazz.getClass().getField("ProofImage");
-            clazz.set(proofImage.getName(), proofImage.get(clazz).toString().substring(0, 30));
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
     }
 
 }

@@ -34,13 +34,15 @@ public class TencentCloudSMSFactory extends AbstractSMSFactory {
         TencentSMSTypeEnum signTypeEnum = checkTencentSignType(applySignDTO.getType());
         TencentDocumentTypeEnum certificationTypeEnum = checkCertificationType(applySignDTO.getCertificationType());
         TencentSignSourceEnum signSourceEnum = checkTencentSignSource(applySignDTO.getSource(), certificationTypeEnum);
-        String imageBase64 = CertificationFileUtil.encryptFileToBase64(applySignDTO.getFile());
+        String certificationImgBase64 = CertificationFileUtil.encryptFileToBase64(applySignDTO.getCertificationImaFile());
+        String commissionImgBase64 = CertificationFileUtil.encryptFileToBase64(applySignDTO.getCommissionImgFile());
         return TencentApplyOrModifySign.builder()
                                        .name(applySignDTO.getName())
                                        .documentType(certificationTypeEnum.getCode())
                                        .purpose(applySignDTO.getPurpose())
                                        .type(signTypeEnum.getOutCode())
-                                       .proofImage(imageBase64)
+                                       .proofImage(certificationImgBase64)
+                                       .commissionImage(commissionImgBase64)
                                        .remark(applySignDTO.getRemark())
                                        .source(signSourceEnum.getOutCode())
                                        .build();
@@ -51,14 +53,16 @@ public class TencentCloudSMSFactory extends AbstractSMSFactory {
         TencentSMSTypeEnum signTypeEnum = checkTencentSignType(modifySignDTO.getType());
         TencentDocumentTypeEnum certificationTypeEnum = checkCertificationType(modifySignDTO.getCertificationType());
         TencentSignSourceEnum signSourceEnum = checkTencentSignSource(modifySignDTO.getSource(), certificationTypeEnum);
-        String imageBase64 = CertificationFileUtil.encryptFileToBase64(modifySignDTO.getFile());
+        String certificationImgBase64 = CertificationFileUtil.encryptFileToBase64(modifySignDTO.getCertificationImaFile());
+        String commissionImgBase64 = CertificationFileUtil.encryptFileToBase64(modifySignDTO.getCommissionImgFile());
         return TencentApplyOrModifySign.builder()
                                        .id(modifySignDTO.getId())
                                        .name(modifySignDTO.getName())
                                        .documentType(certificationTypeEnum.getCode())
                                        .purpose(modifySignDTO.getPurpose())
                                        .type(signTypeEnum.getOutCode())
-                                       .proofImage(imageBase64)
+                                       .proofImage(certificationImgBase64)
+                                       .commissionImage(commissionImgBase64)
                                        .remark(modifySignDTO.getRemark())
                                        .source(signSourceEnum.getOutCode())
                                        .build();

@@ -35,12 +35,12 @@ public class AliCloudSMSFactory extends AbstractSMSFactory {
 
     @Override
     public <T extends AbstractSMSSign> AliApplyOrModifySign createApplySign(ApplySignDTO applySignDTO) {
-        return getAbstractSMSSign(applySignDTO.getSource(), applySignDTO.getType(), applySignDTO.getFile(), applySignDTO.getName(), applySignDTO.getRemark());
+        return getAbstractSMSSign(applySignDTO.getSource(), applySignDTO.getType(), applySignDTO.getCertificationImaFile(), applySignDTO.getName(), applySignDTO.getRemark());
     }
 
     @Override
     public <T extends AbstractSMSSign> AliApplyOrModifySign createModifySign(ModifySignDTO modifySignDTO) {
-        return getAbstractSMSSign(modifySignDTO.getSource(), modifySignDTO.getType(), modifySignDTO.getFile(), modifySignDTO.getName(), modifySignDTO.getRemark());
+        return getAbstractSMSSign(modifySignDTO.getSource(), modifySignDTO.getType(), modifySignDTO.getCertificationImaFile(), modifySignDTO.getName(), modifySignDTO.getRemark());
     }
 
     private AliApplyOrModifySign getAbstractSMSSign(Integer source, Integer type, MultipartFile file, String name, String remark) {

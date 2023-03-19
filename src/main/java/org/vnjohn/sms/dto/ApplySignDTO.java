@@ -38,7 +38,13 @@ public class ApplySignDTO implements Serializable {
     /**
      * 认证文件，图片
      */
-    private MultipartFile file;
+    private MultipartFile certificationImaFile;
+
+    /**
+     * 委托授权证明，图片
+     * 委托授权证明图，签名用途为 1 时需要
+     */
+    private MultipartFile commissionImgFile;
 
     /**
      * 签名类型

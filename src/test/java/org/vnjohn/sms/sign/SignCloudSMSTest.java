@@ -40,13 +40,13 @@ public class SignCloudSMSTest {
     @Resource
     private AbstractSMSService smsService;
 
-    public static MultipartFile getMultipartFile(String path) {
+    public static MultipartFile getMultipartFile(String path, String fileName) {
         File file = new File(path);
         // 文件会在哪个目录创建
         FileItem fileItem;
         try {
             fileItem = new DiskFileItem(
-                    "file",//form表单文件控件的名字随便起
+                    fileName,//form表单文件控件的名字随便起
                     Files.probeContentType(file.toPath()),//文件类型
                     false, //是否是表单字段
                     file.getName(),//原始文件名
@@ -68,7 +68,8 @@ public class SignCloudSMSTest {
     @Test
     public void createSign() {
         ApplySignDTO applySignDTO = new ApplySignDTO();
-        applySignDTO.setFile(getMultipartFile("/Users/vnjohn/Pictures/shangye.png"));
+        applySignDTO.setCertificationImaFile(getMultipartFile("/Users/vnjohn/Pictures/shangye.png", "certificationImaFile"));
+        applySignDTO.setCommissionImgFile(getMultipartFile("/Users/vnjohn/Pictures/shangye.png", "commissionImgFile"));
         applySignDTO.setName("星未");
         applySignDTO.setPurpose(SMSSignPurposeEnum.HE_USE.getCode());
         applySignDTO.setSource(SMSSignSourceEnum.TRADEMARK.getCode());
@@ -85,7 +86,8 @@ public class SignCloudSMSTest {
         ModifySignDTO modifySignDTO = new ModifySignDTO();
         // 阿里云无须传递
         modifySignDTO.setId(518715L);
-        modifySignDTO.setFile(getMultipartFile("/Users/vnjohn/Pictures/shangye.png"));
+        modifySignDTO.setCertificationImaFile(getMultipartFile("/Users/vnjohn/Pictures/shangye.png", "certificationImaFile"));
+        modifySignDTO.setCommissionImgFile(getMultipartFile("/Users/vnjohn/Pictures/shangye.png", "commissionImgFile"));
         modifySignDTO.setName("xxx");
         modifySignDTO.setPurpose(SMSSignPurposeEnum.HE_USE.getCode());
         modifySignDTO.setSource(SMSSignSourceEnum.TRADEMARK.getCode());

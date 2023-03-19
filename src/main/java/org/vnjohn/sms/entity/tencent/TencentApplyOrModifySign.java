@@ -1,5 +1,6 @@
 package org.vnjohn.sms.entity.tencent;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tencentcloudapi.sms.v20210111.models.AddSmsSignRequest;
 import com.tencentcloudapi.sms.v20210111.models.ModifySmsSignRequest;
 import lombok.AllArgsConstructor;
@@ -48,7 +49,14 @@ public class TencentApplyOrModifySign extends AbstractSMSSign {
     /**
      * 资质证明图片
      */
+    @JsonIgnore
     private String proofImage;
+
+    /**
+     * 委托授权证明图，签名用途为 1 时需要
+     */
+    @JsonIgnore
+    private String commissionImage;
 
     /**
      * 签名备注（可选）
@@ -63,6 +71,7 @@ public class TencentApplyOrModifySign extends AbstractSMSSign {
         applySignRequest.setInternational(type.longValue());
         applySignRequest.setSignPurpose(purpose.longValue());
         applySignRequest.setProofImage(proofImage);
+        applySignRequest.setCommissionImage(commissionImage);
         applySignRequest.setRemark(remark);
         return applySignRequest;
     }
@@ -76,6 +85,7 @@ public class TencentApplyOrModifySign extends AbstractSMSSign {
         modifySignRequest.setInternational(type.longValue());
         modifySignRequest.setSignPurpose(purpose.longValue());
         modifySignRequest.setProofImage(proofImage);
+        modifySignRequest.setCommissionImage(commissionImage);
         modifySignRequest.setRemark(remark);
         return modifySignRequest;
     }

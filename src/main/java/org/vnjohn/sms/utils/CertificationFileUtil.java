@@ -40,6 +40,9 @@ public class CertificationFileUtil {
     }
 
     public static String encryptFileToBase64(MultipartFile file) {
+        if (file.isEmpty()){
+            return null;
+        }
         // 将图片文件转化为字节数组字符串，并对其进行Base64编码处理
         byte[] data;
         // 输入流
