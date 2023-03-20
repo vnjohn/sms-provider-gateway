@@ -25,10 +25,8 @@ import org.vnjohn.sms.utils.JacksonUtils;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
-import java.lang.reflect.Field;
 
-import static org.vnjohn.sms.SmsBusinessException.throwBusinessException;
-import static org.vnjohn.sms.SmsBusinessException.throwNull;
+import static org.vnjohn.sms.SmsBusinessException.*;
 
 /**
  * 应用管理：https://console.cloud.tencent.com/smsv2
@@ -153,7 +151,7 @@ public class TencentCloudSMSServiceImpl extends AbstractSMSService {
             DescribeSmsSignListResponse smsSignListResponse = getInstance().DescribeSmsSignList(smsSignListRequest);
             log.info("status tencent sign，request【{}】，response【{}】", JacksonUtils.toJson(smsSignListRequest), JacksonUtils.toJson(smsSignListResponse));
             DescribeSignListStatus[] describeSignListStatusSet = smsSignListResponse.getDescribeSignListStatusSet();
-            throwNull(describeSignListStatusSet, "status tencent sign is null");
+            throwEmpty(describeSignListStatusSet, "status tencent sign is null");
             DescribeSignListStatus signListStatuses = describeSignListStatusSet[0];
             TencentApplyStatusEnum signApplyStatusEnum = TencentApplyStatusEnum.parseByCode(signListStatuses.getStatusCode().intValue());
             return ApplyStatusResponse.builder().status(SMSSignApplyStatusEnum.parseByCode(signApplyStatusEnum.getInnerCode()).getCode()).reason(signListStatuses.getReviewReply()).build();

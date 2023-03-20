@@ -18,6 +18,11 @@
         <tencent.cloud.version>3.1.322</tencent.cloud.version>
         <aliyun.dysmsapi.version>2.0.23</aliyun.dysmsapi.version>
         <okio.version>2.10.0</okio.version>
+        <spring.boot.version>2.6.7</spring.boot.version>
+        <spring.cloud.version>2021.0.1</spring.cloud.version>
+        <spring.cloud.alibaba.version>2021.0.1.0</spring.cloud.alibaba.version>
+        <spring.cloud.bootstrap>3.1.1</spring.cloud.bootstrap>
+        <commons.fileupload.version>1.5</commons.fileupload.version>
     </properties>
     <dependencies>
         <dependency>
@@ -26,27 +31,46 @@
         </dependency>
 
         <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+            <version>${spring.cloud.alibaba.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.alibaba.nacos</groupId>
+                    <artifactId>nacos-client</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
-            <version>1.4</version>
+            <version>${commons.fileupload.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
         </dependency>
 
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-            <version>2021.0.1.0</version>
+            <version>${spring.cloud.alibaba.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
-            <version>2021.0.1.0</version>
+            <version>${spring.cloud.alibaba.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
-            <version>3.1.1</version>
+            <version>${spring.cloud.bootstrap}</version>
         </dependency>
 
         <dependency>
@@ -88,6 +112,7 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

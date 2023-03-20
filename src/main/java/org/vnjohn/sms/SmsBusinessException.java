@@ -1,6 +1,13 @@
 package org.vnjohn.sms;
 
+
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.util.Collection;
+
 /**
+ * 短信业务异常类
+ *
  * @author vnjohn
  * @since 2023/3/17
  */
@@ -12,7 +19,19 @@ public class SmsBusinessException extends RuntimeException {
 
     public static void throwNull(Object obj, String message) {
         if (null == obj) {
-            throw new SmsBusinessException(message);
+            throwBusinessException(message);
+        }
+    }
+
+    public static void throwEmpty(Object[] array, String message) {
+        if (ArrayUtils.isEmpty(array)) {
+            throwBusinessException(message);
+        }
+    }
+
+    public static void throwEmpty(Collection<?> collection, String message) {
+        if (null == collection || collection.isEmpty()) {
+            throwBusinessException(message);
         }
     }
 
