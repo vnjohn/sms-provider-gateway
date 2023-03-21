@@ -17,6 +17,7 @@ public enum TencentSignSourceEnum {
     /**
      * 公司、APP、网站、公众号、商标、政府/相关事业单位/其他机构、小程序
      * 关于是否适配 DocumentType 类型，通过正则来进行匹配，较为快一些，document 用于返回匹配不成功的错误信息
+     * document type {@link TencentDocumentTypeEnum}
      */
     COMPANY(0, 0, "公司", "^([0]|[1])$", "0,1"),
     APP(4, 1, "APP", "^([0]|[1]|[2]|[3]|[4])$", "0,1,2,3,4"),
