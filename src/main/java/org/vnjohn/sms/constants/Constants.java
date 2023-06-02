@@ -6,6 +6,8 @@ package org.vnjohn.sms.constants;
  */
 public interface Constants {
     String COMMA = ",";
+    String POUND_KEY = "#";
+    String REDIS_CACHE_PREFIX = "vnjohn-sms:";
     String SMS_CLOUD_PROVIDER_PROPERTIES = "sms.provider.service";
 
     Integer OFFSET = 0;

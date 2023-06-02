@@ -13,19 +13,19 @@ import org.springframework.stereotype.Component;
 @Component
 @RefreshScope
 public class SMSCloudProviderConfig {
-    @Value("${sms.provider.ali.access-key}")
+    @Value("${sms.provider.ali.access-key:}")
     private String aliAccessKey;
 
-    @Value("${sms.provider.ali.secret}")
+    @Value("${sms.provider.ali.secret:}")
     private String aliSecret;
 
     @Value("${sms.provider.ali.endpoint:dysmsapi.aliyuncs.com}")
     private String aliEndPoint;
 
-    @Value("${sms.provider.tencent.access-key}")
+    @Value("${sms.provider.tencent.access-key:}")
     private String tencentAccessKey;
 
-    @Value("${sms.provider.tencent.secret}")
+    @Value("${sms.provider.tencent.secret:}")
     private String tencentSecret;
 
     @Value("${sms.provider.tencent.endpoint:sms.tencentcloudapi.com}")

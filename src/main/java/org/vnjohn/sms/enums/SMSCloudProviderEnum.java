@@ -17,7 +17,7 @@ public enum SMSCloudProviderEnum {
      */
     ALI_CLOUD("AliCloud", "阿里云"),
     TENCENT_CLOUD("TencentCloud", "腾讯云"),
-    HUAWEI_CLOUD("HuaWeiCloud", "华为云");
+    HUAWEI_CLOUD("HuaweiCloud", "华为云");
 
     private final String code;
     private final String desc;

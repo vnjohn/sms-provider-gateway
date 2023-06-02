@@ -1,5 +1,6 @@
 package org.vnjohn.sms.condition;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -14,7 +15,7 @@ import org.vnjohn.sms.enums.SMSCloudProviderEnum;
  */
 public class AliCloudOnCondition implements Condition {
     @Override
-    public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+    public boolean matches(ConditionContext context, @NotNull AnnotatedTypeMetadata metadata) {
         String propertyVal = context.getEnvironment().getProperty(Constants.SMS_CLOUD_PROVIDER_PROPERTIES);
         return null != propertyVal && propertyVal.equals(SMSCloudProviderEnum.ALI_CLOUD.getCode());
     }

@@ -4,10 +4,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.vnjohn.sms.config.HuaweiAuthTokenConfig;
-import org.vnjohn.sms.request.AuthTokenRequest;
-import org.vnjohn.sms.utils.JacksonUtils;
+import org.vnjohn.sms.config.HuaweiAuthTokenParamAutoConfiguration;
+import org.vnjohn.sms.constants.Constants;
+import org.vnjohn.sms.service.AbstractSMSService;
+
+import javax.annotation.Resource;
 
 
 /**
@@ -18,18 +21,18 @@ import org.vnjohn.sms.utils.JacksonUtils;
 @SpringBootTest
 @RunWith(SpringRunner.class)
 public class AuthTest {
-    @Autowired(required = false)
-    private HuaweiAuthTokenConfig authTokenConfig;
+    @Autowired
+    private ApplicationContext applicationContext;
 
-    @Autowired(required = false)
-    private HuaweiAuthTokenConfig.AuthIdentity authTokenConfig1;
+    @Resource
+    private AbstractSMSService smsService;
+
+    @Resource
+    private HuaweiAuthTokenParamAutoConfiguration authTokenParamAutoConfiguration;
 
     @Test
     public void getAuthConfig() {
-        System.out.println(JacksonUtils.toJson(authTokenConfig));
-        System.out.println(JacksonUtils.toJson(authTokenConfig1));
-        AuthTokenRequest authTokenRequest = new AuthTokenRequest();
-
-        System.out.println(JacksonUtils.toJson(authTokenRequest));
+        System.out.println(applicationContext.getEnvironment().getProperty(Constants.SMS_CLOUD_PROVIDER_PROPERTIES));
+        System.out.println(authTokenParamAutoConfiguration.authAccessToken());
     }
 }
