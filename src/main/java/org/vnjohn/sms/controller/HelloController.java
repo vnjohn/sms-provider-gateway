@@ -17,7 +17,17 @@ public class HelloController {
     private CacheService cacheService;
 
     @GetMapping("get/cache")
-    public String getCache() {
-        return cacheService.cache();
+    public String getCache(Long id) {
+        return cacheService.cache(id);
+    }
+
+    @GetMapping("cache_evict")
+    public String cacheEvict(Long id) {
+        return cacheService.cacheEvict(id);
+    }
+
+    @GetMapping("cache_put")
+    public String cachePut(Long id, String content) {
+        return cacheService.cachePut(id, content);
     }
 }

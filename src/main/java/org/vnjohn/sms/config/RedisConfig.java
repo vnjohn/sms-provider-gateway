@@ -8,12 +8,12 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
-import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.*;
@@ -35,24 +35,25 @@ public class RedisConfig {
     private RedisConnectionFactory factory;
 
     @Bean
-    public RedisCacheManager redisCacheManager(RedisTemplate<String, Object> redisTemplate) {
+    public CachingConfigurer customCachingConfigurer(RedisTemplate<String, Object> redisTemplate) {
         RedisCacheWriter redisCacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(Objects.requireNonNull(redisTemplate.getConnectionFactory()));
-        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig().serializeValuesWith(RedisSerializationContext.
-                        SerializationPair.fromSerializer(redisTemplate.getValueSerializer())).computePrefixWith(cacheName -> Constants.REDIS_CACHE_PREFIX + cacheName);
-        return new CustomRedisCacheManager(redisCacheWriter, redisCacheConfiguration);
-    }
-
-    @Bean
-    public CachingConfigurer customCachingConfigurer() {
+        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
+                                                                                 .serializeValuesWith(RedisSerializationContext
+                                                                                         .SerializationPair.fromSerializer(redisTemplate.getValueSerializer()))
+                                                                                 .computePrefixWith(cacheName -> Constants.REDIS_CACHE_PREFIX + cacheName);
         return new CachingConfigurer() {
             @Override
             public KeyGenerator keyGenerator() {
                 return (target, method, params) -> {
-                    // 返回后缀名 > 注意，这里不能返回null,否则会报错
-                    //java.lang.IllegalArgumentException:
-                    // Null key returned for cache operation (caches=[listAll] | key='' | keyGenerator='myKeyGenerator' | cacheManager='' | cacheResolver='' | condition='' | unless='' | sync='false'
+                    // 返回后缀名 > 注意，这里不能返回 null,否则会报错
+                    // java.lang.IllegalArgumentException: Null key returned for cache operation (maybe you are using named params on classes without debug info?)
                     return StringUtils.EMPTY;
                 };
+            }
+
+            @Override
+            public CacheManager cacheManager() {
+                return new CustomRedisCacheManager(redisCacheWriter, redisCacheConfiguration);
             }
         };
     }
@@ -62,13 +63,14 @@ public class RedisConfig {
         Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(
                 Object.class);
         ObjectMapper om = new ObjectMapper();
+        // 非 Null 值才进行注入
         om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
         om.activateDefaultTyping(LaissezFaireSubTypeValidator.instance, ObjectMapper.DefaultTyping.EVERYTHING);
         om.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         om.registerModule(new JavaTimeModule());
         serializer.setObjectMapper(om);
-
+        // 操作 Redis 模版
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(factory);
         template.setKeySerializer(new StringRedisSerializer());
@@ -76,7 +78,7 @@ public class RedisConfig {
         template.setHashKeySerializer(new StringRedisSerializer());
         template.setHashValueSerializer(serializer);
         template.setDefaultSerializer(new StringRedisSerializer());
-
+        // 属性注入，其他未设置的属性采用默认的实现
         template.afterPropertiesSet();
         return template;
     }

@@ -130,7 +130,6 @@ public class HuaweiAuthTokenParamAutoConfiguration {
         if (CollectionUtils.isEmpty(tokenHeaders)) {
             throw new SmsBusinessException("Auth X-Subject-Token fail");
         }
-
         return tokenHeaders.get(0);
     }
 }

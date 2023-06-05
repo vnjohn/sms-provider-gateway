@@ -8,18 +8,18 @@ import org.vnjohn.sms.utils.GlobalSpringApplicationContext;
 
 /**
  * @author vnjohn
- * @since 2023/5/31
+ * @since 2023/6/3
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class AuthTokenRequest extends BaseRequest {
+@EqualsAndHashCode(callSuper = false)
+public class QuerySignRequest extends BaseRequest { 
     @Override
     public HttpMethod getMethod() {
-        return HttpMethod.POST;
+        return HttpMethod.GET;
     }
 
     @Override
     public String getUrl() {
-        return GlobalSpringApplicationContext.getEnvProperties(Constants.HUAWEI_AUTH_URL);
+        return GlobalSpringApplicationContext.getEnvProperties(Constants.HUAWEI_SIGN_QUERY_URL);
     }
 }

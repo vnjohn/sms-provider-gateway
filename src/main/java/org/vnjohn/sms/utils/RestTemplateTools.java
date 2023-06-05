@@ -14,6 +14,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
+import org.vnjohn.sms.request.BaseRequest;
+import org.vnjohn.sms.response.huawei.BaseResponse;
 
 import javax.net.ssl.SSLContext;
 import java.util.Map;
@@ -57,6 +59,27 @@ public class RestTemplateTools {
             log.error("创建 HttpsRestTemplate 失败", e);
             throw new RuntimeException("创建 HttpsRestTemplate 失败", e);
         }
+    }
+
+    /**
+     * 基于请求方式封装调用不同 API
+     *
+     * @param request
+     * @param response
+     * @return
+     */
+    public static ResponseEntity<? extends BaseResponse> request(BaseRequest request, Class<? extends BaseResponse> response) {
+        String method = request.getMethod().name();
+        ResponseEntity<? extends BaseResponse> responseEntity = null;
+        switch (method) {
+            case "GET":
+                responseEntity = get(request.getUrl(), request.getHeaders(), response);
+            break;
+            case "POST":
+                responseEntity = post(request.getUrl(), request.getHeaders(), request, response);
+                break;
+        }
+        return responseEntity;
     }
 
 
@@ -104,6 +127,20 @@ public class RestTemplateTools {
      */
     public static <T> ResponseEntity<T> get(String url, Class<T> responseType, Map<String, ?> uriVariables) {
         return getInstance().getForEntity(url, responseType, uriVariables);
+    }
+
+    /**
+     * 带请求头的GET请求调用方式
+     *
+     * @param url          请求URL
+     * @param headers      请求头参数
+     * @param responseType 返回对象类型
+     * @return ResponseEntity 响应对象封装类
+     */
+    public static <T> ResponseEntity<T> get(String url, Map<String, String> headers, Class<T> responseType) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setAll(headers);
+        return get(url, httpHeaders, responseType);
     }
 
     /**
